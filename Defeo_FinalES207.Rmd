@@ -1,0 +1,163 @@
+---
+title: "Defeo_Final"
+author: "Shelby Defeo"
+date: "4/25/2022"
+output: word_document
+---
+Question 1:
+Let’s explore the possible implications of these revised standards. For Merced County, is there a 
+significant difference in the number of days in a year that exceed EPA ozone standards as 
+defined by the 2008 NAAQ versus the 2015 NAAQ? If so, what is the magnitude of the 
+difference? Base your analysis on the following years: 2021 and 2011. Note, in this question, you 
+are not comparing 2021 to 2011 – we will do that in the next question.  
+Provide a 250-500 word summary or your analysis and interpretation of your results. Please cite 
+all outside references (e.g., papers, government reports) used to support your interpretation.
+```{r}
+##Question 1
+
+##Import data and arrange to be able to compare ozone values and standards
+library(tidyverse)
+data_2001 <- read.csv("Ozone2001.csv")
+data_2001
+ozone_2001 <- (data_2001$Daily.Max.8.hour.Ozone.Concentration)
+ozone_2001
+
+data_2011 <- read.csv("Ozone2011.csv")
+data_2011
+ozone_2011 <- (data_2011$Daily.Max.8.hour.Ozone.Concentration)
+ozone_2011
+
+data_2021 <- read.csv("Ozone2021.csv")
+data_2021
+ozone_2021 <- (data_2021$Daily.Max.8.hour.Ozone.Concentration)
+ozone_2021
+
+##Compare 2001 to 2008 and 2015 standards
+#2008 standard of 0.075
+over2008_01 <- length(ozone_2001[ozone_2001>0.075])
+over2008_01
+
+#2015 standard of 0.70
+over2015_01 <- length(ozone_2001[ozone_2001>0.07])
+over2015_01
+
+#Compare to assess for significant difference
+binom.test(61, 84, p = 0.5,
+           alternative = c("two.sided"),
+           conf.level = 0.95)
+
+
+##Compare 2011 to 2008 and 2015 standards
+#2008 standard of 0.075
+over2008_11 <- length(ozone_2011[ozone_2011>0.075])
+over2008_11
+
+#2015 standard of 0.70
+over2015_11 <- length(ozone_2011[ozone_2011>0.07])
+over2015_11
+
+#Compare to assess for significant difference
+binom.test(19, 38, p = 0.5,
+           alternative = c("two.sided"),
+           conf.level = 0.95)
+
+
+##Compare 2021 to 2008 and 2015 standards
+#2008 standard of 0.075
+over2008_21 <- length(ozone_2021[ozone_2021>0.075])
+over2008_21
+
+#2015 standard of 0.70
+over2015_21 <- length(ozone_2021[ozone_2021>0.07])
+over2015_21
+
+#Compare to assess for significant difference
+binom.test(7, 21, p = 0.5,
+           alternative = c("two.sided"),
+           conf.level = 0.95)
+```
+
+
+
+
+Question 2:  
+Is there a significant difference in ozone concentration between years (2001, 2011, 2021)? If so, 
+what is possibly driving that difference. Note, for this analysis, you should conduct three 
+separate comparisons: 1) 2001 & 2011, 2) 2011 & 2021, 3) 2001 & 2021. 
+Provide a 250-500 word summary or your analysis interpretation of your results. Please cite all 
+outside references (e.g., papers, government reports) used to support your interpretation. 
+
+```{r}
+##Question 2
+
+##Import data and arrange to be able to compare ozone values
+library(tidyverse)
+data_2001 <- read.csv("Ozone2001.csv")
+data_2001
+ozone_2001 <- (data_2001$Daily.Max.8.hour.Ozone.Concentration)
+ozone_2001
+
+data_2011 <- read.csv("Ozone2011.csv")
+data_2011
+ozone_2011 <- (data_2011$Daily.Max.8.hour.Ozone.Concentration)
+ozone_2011
+
+data_2021 <- read.csv("Ozone2021.csv")
+data_2021
+ozone_2021 <- (data_2021$Daily.Max.8.hour.Ozone.Concentration)
+ozone_2021
+
+
+##Assess if 3 assumptions for parametric tests are met
+qqnorm(ozone_2001)
+qqline(ozone_2001)
+
+qqnorm(ozone_2011)
+qqline(ozone_2011)
+
+qqnorm(ozone_2021)
+qqline(ozone_2021)
+#The three graphs each have slight deviations from normal, but I feel that they are close enough for me to assume normality.
+
+sd01 <- sd(ozone_2001)
+sd01
+
+sd11 <- sd(ozone_2011)
+sd11
+
+sd21 <- sd(ozone_2021)
+sd21
+
+var01_11 <- sd01/sd11
+var01_11
+
+var01_21 <- sd01/sd21
+var01_21
+
+var21_11 <- sd21/sd11
+var21_11
+
+#The variance ratios are all within 0.5 and 2 so we can assume that the variance is approximately homogeneous.
+#Assume from website/data that all the data were collected in a way that they were randomly and independently sampled.
+#I will use a parameteric test because all 3 assumptions are met.
+
+##Assess differences between ozone concentrations in years
+t.test(ozone_2001, ozone_2011, mu = 0, paired = FALSE, var.equal = TRUE, conf.level = 0.95)
+#p-value = 0.0005137
+
+t.test(ozone_2011, ozone_2021, mu = 0, paired = FALSE, var.equal = TRUE, conf.level = 0.95)
+#p-value = 0.005297
+
+t.test(ozone_2001, ozone_2021, mu = 0, paired = FALSE, var.equal = TRUE, conf.level = 0.95)
+#p-value = 5.929e-11
+
+mean01 <- mean(ozone_2001)
+mean01
+
+mean11 <- mean(ozone_2011)
+mean11
+
+mean21 <- mean(ozone_2021)
+mean21
+```
+
